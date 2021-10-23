@@ -17,13 +17,17 @@ public:
 
     SDL_Texture* getTexture();
     SDL_Rect getCurrentFrame();
+    void setCurrentFrame(SDL_Rect newFrame);
 
     void setAngle(int newAngle);
     int getAngle();
+
+    bool isClicked(float x, float y);
 
 private:
     float x, y, w, h;
     SDL_Texture* texture;
     SDL_Rect currentFrame;
+    
     int angle;
 };

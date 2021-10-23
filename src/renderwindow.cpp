@@ -23,8 +23,10 @@ SDL_Texture* RenderWindow::loadTexture(const char* filePath) {
     return texture;
 }
 
-void RenderWindow::clear() {
+void RenderWindow::clear(vector<int> color) {
+    SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], 255);
     SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 }
 
 void RenderWindow::display() {
@@ -47,3 +49,14 @@ void RenderWindow::render(Entity& entity) {
     SDL_RenderCopyEx(renderer, entity.getTexture(), &src, &dest, 0, NULL, SDL_FLIP_NONE);
 }
 
+void RenderWindow::drawRect(SDL_Rect rect, vector<int> color, int alpha) {
+    SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], alpha);
+    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+}
+
+void RenderWindow::drawLine(vector<vector<int>> points, vector<int> color, int alpha) {
+    SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], alpha);
+    SDL_RenderDrawLine(renderer, points[0][0], points[0][1], points[1][0], points[1][1]);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+}

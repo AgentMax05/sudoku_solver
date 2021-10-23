@@ -19,6 +19,14 @@ float Entity::getY() {
     return y;
 }
 
+void Entity::setX(float xP) {
+    x = xP;
+}
+
+void Entity::setY(float yP) {
+    y = yP;
+}
+
 int Entity::getW() {
     return w;
 }
@@ -35,10 +43,23 @@ SDL_Rect Entity::getCurrentFrame() {
     return currentFrame;
 }
 
+void Entity::setCurrentFrame(SDL_Rect newFrame) {
+    currentFrame = newFrame;
+}
+
 int Entity::getAngle() {
     return angle;
 }
 
 void Entity::setAngle(int newAngle) {
     angle = newAngle;
+}
+
+bool Entity::isClicked(float xP, float yP) {
+    return (
+        xP < x + w &&
+        xP > x &&
+        yP < y + h &&
+        yP > y
+    );
 }
