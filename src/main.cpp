@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include <thread>
+
 #include "RenderWindow.hpp"
 #include "Clock.hpp"
 
@@ -199,6 +201,16 @@ vector<int> startSolve(vector<int>& boardP, Texture* numbersWrong, Texture* numb
     return board;
 }
 
+void callSolve(vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Texture* numbersSolved) {
+    vector<int> solvedBoard = startSolve(board, numbersWrong, numbersPossible);
+    printBoard(solvedBoard);
+    for (int i = 0; i < board.size(); i++) {
+        if (board[i] == 0) {
+            setSquareNum(solvedBoard[i], numSprites, numbersSolved, &gridSquares[i]);
+        }
+    }
+}
+
 int mainloop(RenderWindow& window) {
     bool mainloopRunning = true;
     SDL_Event event;
@@ -209,7 +221,7 @@ int mainloop(RenderWindow& window) {
     Texture* numbersWrong = window.loadTexture("./res/numbers_red.png");
     Texture* numbersPossible = window.loadTexture("./res/numbers_blue.png");
 
-    Texture* black_outline = window.loadTexture("./res/black_outline2.png");
+    Texture* black_outline = window.loadTexture("./res/black_outline3.png");
 
     vector<int> board = {
         0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -232,12 +244,12 @@ int mainloop(RenderWindow& window) {
 
     int mouseX, mouseY;
 
+    Entity* clickedSquare = &gridSquares[0];
+    int clickedSquareIndex = 0;
+
     int highlightX = 0;
     int highlightY = 0;
-    bool highlight = false;
-
-    Entity* clickedSquare = NULL;
-    int clickedSquareIndex = 0;
+    bool highlight = true;
 
     while (mainloopRunning) {
         clock.tick();
@@ -267,13 +279,8 @@ int mainloop(RenderWindow& window) {
                 }
                 else if (event.key.keysym.sym == SDLK_RETURN) {
                     if (checkLegal(board)) {
-                        vector<int> solvedBoard = startSolve(board, numbersWrong, numbersPossible);
-                        printBoard(solvedBoard);
-                        for (int i = 0; i < board.size(); i++) {
-                            if (board[i] == 0) {
-                                setSquareNum(solvedBoard[i], numSprites, numbersSolved, &gridSquares[i]);
-                            }
-                        }
+                        // thread solveThread(callSolve, board, numbersWrong, numbersPossible, numbersSolved);
+                        callSolve(board, numbersWrong, numbersPossible, numbersSolved);
                     }
                 }
                 else if (event.key.keysym.sym == SDLK_LEFT) {
@@ -342,8 +349,10 @@ int mainloop(RenderWindow& window) {
 
         for (int i = 1; i < 3; i++) {
             window.drawLine({{0, i * 150 + 1}, {450, i * 150 + 1}}, {0, 0, 0});
+            window.drawLine({{0, i * 150}, {450, i * 150}}, {0, 0, 0});
             window.drawLine({{0, i * 150 - 1}, {450, i * 150 - 1}}, {0, 0, 0});
             window.drawLine({{i * 150 + 1, 0}, {i * 150 + 1, 450}}, {0, 0, 0});
+            window.drawLine({{i * 150, 0}, {i * 150, 450}}, {0, 0, 0});
             window.drawLine({{i * 150 - 1, 0}, {i * 150 - 1, 450}}, {0, 0, 0});
         }
 
