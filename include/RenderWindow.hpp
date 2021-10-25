@@ -16,7 +16,7 @@ public:
     void display();
     void render(Entity& entity);
 
-    void drawRect(SDL_Rect rect, vector<int> color, int alpha = 255);
+    void drawRect(SDL_Rect rect, vector<int> color, int alpha = 255, bool fill = false);
     void drawLine(vector<vector<int>> point2, vector<int> color, int alpha = 255);
 
 private:

@@ -17,6 +17,7 @@ const int REFRESHRATE = 60;
 
 vector<Entity> numSprites = {};
 vector<Entity> gridSquares = {};
+Entity* visualizerSquare = NULL;
 
 int mainloop(RenderWindow& window);
 
@@ -171,25 +172,31 @@ void printBoard(vector<int>& board) {
     cout << '\n';
 }
 
-bool solveBoard(int index, vector<int>& board, Texture* numbersWrong, Texture* numbersPossible) {
+bool solveBoard(int index, vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Clock* solveClock = NULL) {
+    if (solveClock != NULL) {
+        solveClock->tick();
+    }
+    visualizerSquare = &gridSquares[index];
     // printBoard(board);
     int num = nextLegalNum(board, index, 1);
     if (num == -1) {
         return false;
     } 
+    setSquareNum(num, numSprites, numbersPossible, &gridSquares[index]);
     board[index] = num;
-    // setSquareNum(num, numSprites, numbersPossible, &gridSquares[index]);
 
     if (index == board.size() - 1) {
         return true;
     }
 
-    while (!solveBoard(findNextBlank(board, index), board, numbersWrong, numbersPossible)) {
+    while (!solveBoard(findNextBlank(board, index), board, numbersWrong, numbersPossible, solveClock)) {
         num = nextLegalNum(board, index, num + 1);
         if (num == -1) {
+            setSquareNum(0, numSprites, numbersPossible, &gridSquares[index]);
             board[index] = 0;
             return false;
         }
+        setSquareNum(num, numSprites, numbersPossible, &gridSquares[index]);
         board[index] = num;
     }
     return true;
@@ -197,11 +204,25 @@ bool solveBoard(int index, vector<int>& board, Texture* numbersWrong, Texture* n
 
 vector<int> startSolve(vector<int>& boardP, Texture* numbersWrong, Texture* numbersPossible) {
     vector<int> board = boardP;
-    solveBoard(findNextBlank(board, -1), board, numbersWrong, numbersPossible);
+    Clock solveClock(REFRESHRATE * 3);
+    solveBoard(findNextBlank(board, -1), board, numbersWrong, numbersPossible, &solveClock);
     return board;
 }
 
-void callSolve(vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Texture* numbersSolved) {
+struct callSolveThreadArgs {
+    vector<int>& board;
+    Texture* numbersWrong;
+    Texture* numbersPossible;
+    Texture* numbersSolved;
+};
+
+// void callSolve(vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Texture* numbersSolved) {
+void callSolve(callSolveThreadArgs& threadArgs) {
+    vector<int>& board = threadArgs.board;
+    Texture* numbersWrong = threadArgs.numbersWrong;
+    Texture* numbersPossible = threadArgs.numbersPossible;
+    Texture* numbersSolved = threadArgs.numbersSolved;
+
     vector<int> solvedBoard = startSolve(board, numbersWrong, numbersPossible);
     printBoard(solvedBoard);
     for (int i = 0; i < board.size(); i++) {
@@ -209,6 +230,7 @@ void callSolve(vector<int>& board, Texture* numbersWrong, Texture* numbersPossib
             setSquareNum(solvedBoard[i], numSprites, numbersSolved, &gridSquares[i]);
         }
     }
+    visualizerSquare = NULL;
 }
 
 int mainloop(RenderWindow& window) {
@@ -216,10 +238,10 @@ int mainloop(RenderWindow& window) {
     SDL_Event event;
     Clock clock(REFRESHRATE);
 
-    Texture* numbers = window.loadTexture("./res/numbers3.png");
-    Texture* numbersSolved = window.loadTexture("./res/numbers_green.png");
-    Texture* numbersWrong = window.loadTexture("./res/numbers_red.png");
-    Texture* numbersPossible = window.loadTexture("./res/numbers_blue.png");
+    Texture* numbers = window.loadTexture("./res/numbers4.png");
+    Texture* numbersSolved = window.loadTexture("./res/numbers4_green.png");
+    Texture* numbersWrong = window.loadTexture("./res/numbers4_red.png");
+    Texture* numbersPossible = window.loadTexture("./res/numbers4_blue.png");
 
     Texture* black_outline = window.loadTexture("./res/black_outline3.png");
 
@@ -280,7 +302,11 @@ int mainloop(RenderWindow& window) {
                 else if (event.key.keysym.sym == SDLK_RETURN) {
                     if (checkLegal(board)) {
                         // thread solveThread(callSolve, board, numbersWrong, numbersPossible, numbersSolved);
-                        callSolve(board, numbersWrong, numbersPossible, numbersSolved);
+                        callSolveThreadArgs args = {board, numbersWrong, numbersPossible, numbersSolved};
+                        thread solveThread(callSolve, ref(args));
+                        solveThread.detach();
+                        // solveThread.join();
+                        // callSolve(board, numbersWrong, numbersPossible, numbersSolved);
                     }
                 }
                 else if (event.key.keysym.sym == SDLK_LEFT) {
@@ -343,8 +369,15 @@ int mainloop(RenderWindow& window) {
             window.render(gridSquares[i]);
         }
 
+        if (visualizerSquare != NULL) {
+            window.drawRect({(int)visualizerSquare->getX() + 1, (int)visualizerSquare->getY() + 1, 48, 48}, {0, 255, 255}, 128, true);
+            window.drawRect({(int)visualizerSquare->getX(), (int)visualizerSquare->getY(), 50, 50}, {0, 0, 0}, 255, false);
+        }
+
         if (highlight) {
-            window.drawRect({highlightX + 1, highlightY + 1, 48, 48}, {255, 255, 0}, 128);
+            window.drawRect({highlightX + 1, highlightY + 1, 48, 48}, {255, 255, 0}, 128, true);
+            // window.drawRect(({highlightX, highlightY, 50, 50}, {0, 0, 0}, 255, false));
+            window.drawRect({highlightX, highlightY, 50, 50}, {0, 0, 0}, 255, false);
         }
 
         for (int i = 1; i < 3; i++) {

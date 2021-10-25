@@ -49,9 +49,13 @@ void RenderWindow::render(Entity& entity) {
     SDL_RenderCopyEx(renderer, entity.getTexture(), &src, &dest, 0, NULL, SDL_FLIP_NONE);
 }
 
-void RenderWindow::drawRect(SDL_Rect rect, vector<int> color, int alpha) {
+void RenderWindow::drawRect(SDL_Rect rect, vector<int> color, int alpha, bool fill) {
     SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], alpha);
-    SDL_RenderFillRect(renderer, &rect);
+    if (fill) {
+        SDL_RenderFillRect(renderer, &rect);
+    } else {
+        SDL_RenderDrawRect(renderer, &rect);
+    }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 
