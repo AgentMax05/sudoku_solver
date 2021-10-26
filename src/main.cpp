@@ -173,11 +173,14 @@ void printBoard(vector<int>& board) {
 }
 
 bool solveBoard(int index, vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Clock* solveClock = NULL) {
+    if (index == -1) {
+        return true;
+    }
+    
     if (solveClock != NULL) {
         solveClock->tick();
     }
     visualizerSquare = &gridSquares[index];
-    // printBoard(board);
     int num = nextLegalNum(board, index, 1);
     if (num == -1) {
         return false;
