@@ -2,4 +2,4 @@
 *.bat
 .vscode
 releases
-./bin
+bin
