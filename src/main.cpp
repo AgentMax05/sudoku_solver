@@ -18,6 +18,7 @@ const int REFRESHRATE = 60;
 vector<Entity> numSprites = {};
 vector<Entity> gridSquares = {};
 Entity* visualizerSquare = NULL;
+bool solving = false;
 
 int mainloop(RenderWindow& window);
 
@@ -221,6 +222,7 @@ struct callSolveThreadArgs {
 
 // void callSolve(vector<int>& board, Texture* numbersWrong, Texture* numbersPossible, Texture* numbersSolved) {
 void callSolve(callSolveThreadArgs& threadArgs) {
+    solving = true;
     vector<int>& board = threadArgs.board;
     Texture* numbersWrong = threadArgs.numbersWrong;
     Texture* numbersPossible = threadArgs.numbersPossible;
@@ -234,6 +236,7 @@ void callSolve(callSolveThreadArgs& threadArgs) {
         }
     }
     visualizerSquare = NULL;
+    solving = false;
 }
 
 int mainloop(RenderWindow& window) {
@@ -302,7 +305,7 @@ int mainloop(RenderWindow& window) {
                     board[clickedSquareIndex] = event.key.keysym.sym - 48;
                     setSquareNum(event.key.keysym.sym - 48, numSprites, numbers, clickedSquare);
                 }
-                else if (event.key.keysym.sym == SDLK_RETURN) {
+                else if (!solving && event.key.keysym.sym == SDLK_RETURN) {
                     if (checkLegal(board)) {
                         // thread solveThread(callSolve, board, numbersWrong, numbersPossible, numbersSolved);
                         callSolveThreadArgs args = {board, numbersWrong, numbersPossible, numbersSolved};
