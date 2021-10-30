@@ -25,7 +25,7 @@ Once the solution is completed, the previously blue numbers will change to green
 ### Keybindings
 - Arrow keys and left mouse button: move selected square
 - Number keys 1-9: insert number into selected square
-- [SHIFT] + 1-9: cap solve speed, 1 being the slowest 9 being fastest
+- [SHIFT] + 1-9: cap solve speed, (1-9 calculations per second, 9 being the fastest)
 - [SHIFT] + 0: remove solve speed cap (fastest solution)
 - [BACKSPACE]: remove number from selected square
 - [ESCAPE]: clear the whole board
