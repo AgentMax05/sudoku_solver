@@ -15,6 +15,7 @@ typedef SDL_Texture Texture; // shorten typename
 const int SCREENWIDTH = 451, SCREENHEIGHT = 450;
 const int REFRESHRATE = 60;
 
+float solveSpeed = REFRESHRATE * 5;
 vector<Entity> numSprites = {};
 vector<Entity> gridSquares = {};
 Entity* visualizerSquare = NULL;
@@ -208,8 +209,12 @@ bool solveBoard(int index, vector<int>& board, Texture* numbersWrong, Texture* n
 
 vector<int> startSolve(vector<int>& boardP, Texture* numbersWrong, Texture* numbersPossible) {
     vector<int> board = boardP;
-    Clock solveClock(REFRESHRATE * 3);
-    solveBoard(findNextBlank(board, -1), board, numbersWrong, numbersPossible, &solveClock);
+    Clock* solveClock = NULL;
+    if (solveSpeed != 0) {
+        Clock clock(solveSpeed);
+        solveClock = &clock;
+    }
+    solveBoard(findNextBlank(board, -1), board, numbersWrong, numbersPossible, solveClock);
     return board;
 }
 
@@ -271,6 +276,7 @@ int mainloop(RenderWindow& window) {
     }
 
     int mouseX, mouseY;
+    bool shiftDown = false;
 
     Entity* clickedSquare = &gridSquares[0];
     int clickedSquareIndex = 0;
@@ -302,9 +308,17 @@ int mainloop(RenderWindow& window) {
 
             if (clickedSquare != NULL && event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym >= SDLK_1 && event.key.keysym.sym <= SDLK_9) {
-                    board[clickedSquareIndex] = event.key.keysym.sym - 48;
-                    setSquareNum(event.key.keysym.sym - 48, numSprites, numbers, clickedSquare);
+                    if (shiftDown) {
+                        solveSpeed = REFRESHRATE * (event.key.keysym.sym - SDLK_1 + 1);              
+                    } else {
+                        board[clickedSquareIndex] = event.key.keysym.sym - 48;
+                        setSquareNum(event.key.keysym.sym - 48, numSprites, numbers, clickedSquare);
+                    }
                 }
+                else if (event.key.keysym.sym == SDLK_0) {
+                    solveSpeed = 0;
+                }
+
                 else if (!solving && event.key.keysym.sym == SDLK_RETURN) {
                     if (checkLegal(board)) {
                         // thread solveThread(callSolve, board, numbersWrong, numbersPossible, numbersSolved);
@@ -364,6 +378,14 @@ int mainloop(RenderWindow& window) {
                 else if (event.key.keysym.sym == SDLK_BACKSPACE) {
                     board[clickedSquareIndex] = 0;
                     setSquareNum(0, numSprites, numbers, clickedSquare);
+                }
+                else if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
+                    shiftDown = true;
+                }
+            }
+            if (event.type == SDL_KEYUP) {
+                if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) {
+                    shiftDown = false;
                 }
             }
         }
