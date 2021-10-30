@@ -16,6 +16,7 @@ public:
     void setY(float yP);
 
     SDL_Texture* getTexture();
+    void setTexture(SDL_Texture* newTexture);
     SDL_Rect getCurrentFrame();
     void setCurrentFrame(SDL_Rect newFrame);
 

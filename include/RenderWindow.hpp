@@ -18,6 +18,7 @@ public:
 
     void drawRect(SDL_Rect rect, vector<int> color, int alpha = 255, bool fill = false);
     void drawLine(vector<vector<int>> point2, vector<int> color, int alpha = 255);
+    void drawOpaqueRect(SDL_Rect rect, vector<int> color, bool fill = false);
 
 private:
     SDL_Window* window;

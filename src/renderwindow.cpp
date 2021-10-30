@@ -64,3 +64,17 @@ void RenderWindow::drawLine(vector<vector<int>> points, vector<int> color, int a
     SDL_RenderDrawLine(renderer, points[0][0], points[0][1], points[1][0], points[1][1]);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
+
+void RenderWindow::drawOpaqueRect(SDL_Rect rect, vector<int> color, bool fill) {
+    SDL_BlendMode blendMode;
+    SDL_GetRenderDrawBlendMode(renderer, &blendMode);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], color[3]);
+    if (fill) {
+        SDL_RenderFillRect(renderer, &rect);
+    } else {
+        SDL_RenderDrawRect(renderer, &rect);
+    }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawBlendMode(renderer, blendMode);
+}

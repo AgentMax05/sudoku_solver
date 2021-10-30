@@ -253,6 +253,17 @@ int mainloop(RenderWindow& window) {
     Texture* numbersSolved = window.loadTexture("./res/numbers4_green.png");
     Texture* numbersWrong = window.loadTexture("./res/numbers4_red.png");
     Texture* numbersPossible = window.loadTexture("./res/numbers4_blue.png");
+    Texture* number0 = window.loadTexture("./res/number_0.png");
+
+    Texture* speedText = window.loadTexture("./res/speed_text.png");
+
+    Entity speedEntity(0, 0, 140, 47, 140, 47, speedText);
+    speedEntity.setX((SCREENWIDTH / 2) - (speedEntity.getCurrentFrame().w) / 2);
+    speedEntity.setY((SCREENHEIGHT / 2) - (speedEntity.getCurrentFrame().h / 2) - 40);
+
+    Entity speedNotif = numToEntity(0, 0, numbers, 5);
+    speedNotif.setX((SCREENWIDTH / 2) - (speedNotif.getCurrentFrame().w) / 2);
+    speedNotif.setY((SCREENHEIGHT / 2) - (speedNotif.getCurrentFrame().h / 2) + 30);
 
     Texture* black_outline = window.loadTexture("./res/black_outline3.png");
 
@@ -309,7 +320,8 @@ int mainloop(RenderWindow& window) {
             if (clickedSquare != NULL && event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym >= SDLK_1 && event.key.keysym.sym <= SDLK_9) {
                     if (shiftDown) {
-                        solveSpeed = REFRESHRATE * (event.key.keysym.sym - SDLK_1 + 1);              
+                        solveSpeed = REFRESHRATE * (event.key.keysym.sym - SDLK_1 + 1);      
+                        speedNotif = numToEntity(speedNotif.getX(), speedNotif.getY(), numbers, event.key.keysym.sym - SDLK_1 + 1);        
                     } else {
                         board[clickedSquareIndex] = event.key.keysym.sym - 48;
                         setSquareNum(event.key.keysym.sym - 48, numSprites, numbers, clickedSquare);
@@ -317,6 +329,8 @@ int mainloop(RenderWindow& window) {
                 }
                 else if (event.key.keysym.sym == SDLK_0) {
                     solveSpeed = 0;
+                    speedNotif.setTexture(number0);   
+                    speedNotif.setCurrentFrame({0, 0, 32, 32});     
                 }
 
                 else if (!solving && event.key.keysym.sym == SDLK_RETURN) {
@@ -420,6 +434,12 @@ int mainloop(RenderWindow& window) {
     
         for (int i = 0; i < numSprites.size(); i++) {
             window.render(numSprites[i]);
+        }
+
+        if (shiftDown) {
+            window.drawOpaqueRect({125, 125, 200, 200}, {230, 230, 230, 200}, true);
+            window.render(speedEntity);
+            window.render(speedNotif);
         }
 
         window.display();
