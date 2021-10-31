@@ -257,6 +257,9 @@ int mainloop(RenderWindow& window) {
 
     Texture* speedText = window.loadTexture("./res/speed_text.png");
 
+    SDL_Surface* windowIcon = window.loadSurface("./res/icon.png");
+    window.setIcon(windowIcon);
+
     Entity speedEntity(0, 0, 140, 47, 140, 47, speedText);
     speedEntity.setX((SCREENWIDTH / 2) - (speedEntity.getCurrentFrame().w) / 2);
     speedEntity.setY((SCREENHEIGHT / 2) - (speedEntity.getCurrentFrame().h / 2) - 40);

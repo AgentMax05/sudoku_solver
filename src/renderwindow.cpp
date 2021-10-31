@@ -23,6 +23,15 @@ SDL_Texture* RenderWindow::loadTexture(const char* filePath) {
     return texture;
 }
 
+SDL_Surface* RenderWindow::loadSurface(const char* filePath) {
+    SDL_Surface* surface = NULL;
+    surface = IMG_Load(filePath);
+    if (surface == NULL) {
+        std::cout << "Failed to load surface. Error: " << SDL_GetError() << '\n';
+    }
+    return surface;
+}
+
 void RenderWindow::clear(vector<int> color) {
     SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], 255);
     SDL_RenderClear(renderer);
@@ -77,4 +86,8 @@ void RenderWindow::drawOpaqueRect(SDL_Rect rect, vector<int> color, bool fill) {
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_SetRenderDrawBlendMode(renderer, blendMode);
+}
+
+void RenderWindow::setIcon(SDL_Surface* windowIcon) {
+    SDL_SetWindowIcon(window, windowIcon);
 }
