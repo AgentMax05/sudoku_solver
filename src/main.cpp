@@ -12,7 +12,7 @@
 using namespace std;
 typedef SDL_Texture Texture; // shorten typename
 
-const int SCREENWIDTH = 451, SCREENHEIGHT = 450;
+const int SCREENWIDTH = 450, SCREENHEIGHT = 450;
 const int REFRESHRATE = 60;
 
 float solveSpeed = REFRESHRATE * 5;
