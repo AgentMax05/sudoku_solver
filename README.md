@@ -1,5 +1,8 @@
-# sudoku_solver
-A Sudoku solver made in C++ using [SDL](https://www.libsdl.org/) for graphics.
+<p align="center">
+  <img src="https://maxvek.com/sudoku_solver_icon.png" width="300px" height="300px">
+</p>
+
+# Sudoku Solver
 
 ## What is a Sudoku puzzle?
 Sudoku puzzles have been around for a very long time, originating from France in the late 1800s. Modern sudoku (originally known as Number Place) is actually fairly new, first seen in American newspapers in 1979. Since then, sudoku puzzles have blown up in popularity and have since been modified into many different variations. [Find out more about Sudoku](https://en.wikipedia.org/wiki/Sudoku).
