@@ -34,3 +34,6 @@ Once the solution is completed, the previously blue numbers will change to green
 - [BACKSPACE]: remove number from selected square
 - [ESCAPE]: clear the whole board
 - [ENTER]: start solution
+
+### Demo
+https://user-images.githubusercontent.com/64991518/229963098-d58f3ea8-547b-46e9-831f-d45dbe09a855.mp4
